@@ -8,7 +8,7 @@
 	import UserStore from '$lib/stores/user.js';
 
 	let size = getContext('size');
-	$: console.log($size);
+	// $: console.log($size);
 
 	let links = [
 		{
@@ -37,7 +37,6 @@
 	let scrollY;
 	$: fluidOn = scrollY > 0 ? true : false;
 
-	$: console.log($UserStore.user)
 </script>
 
 <svelte:window bind:scrollY />

@@ -11,8 +11,8 @@
         on:input
         id="{type}-input"
         name="{type}-input"
-        placeholder="
-        "
+        placeholder=""
+        autocomplete="off"
         class="px-8 py-8 placeholder-gray-400::placeholder w-full border-0 bg-gray-200 rounded-lg focus:scale-105 transition-all" />
     <p
         class="absolute left-8 top-10 -translate-y-1/4 transition-transform

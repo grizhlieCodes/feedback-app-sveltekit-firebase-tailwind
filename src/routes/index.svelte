@@ -9,6 +9,8 @@
 	import Spinner from '$lib/loading-signin/Spinner.svelte';
 	import { getContext, onMount } from 'svelte';
 	import AuthenticationForm from '$lib/auth-form/Form.svelte';
+	import { handleEmailLogin, handleThirdPartyLogin } from '$lib/scripts/firebase.js';
+
 	// import {AuthFormData} from '$lib/auth-form/authFormData'
 	const formData = {
 		formInputs: [
@@ -32,9 +34,10 @@
 			}
 		]
 	};
+
 	let firebaseAuthStore = getContext('firebaseAuthStore');
 	let googleProvider = new GoogleAuthProvider();
-	let githubProvider = new GithubAuthProvider()
+	let githubProvider = new GithubAuthProvider();
 	let user = true;
 	let loading = false;
 	let loadingFinished = false;
@@ -51,31 +54,21 @@
 		let formStateSignUp = e.detail.formStateSignUp;
 		let email = e.detail.email;
 		let password = e.detail.password;
-		console.log(formStateSignUp, email, password)
-		if (formStateSignUp) {
-			authentication.createUser($firebaseAuthStore, email, password);
-		} else {
-			authentication.signInUser($firebaseAuthStore, email, password);
-		}
+		handleEmailLogin(formStateSignUp, email, password);
 		handleLoginModal();
 	};
 
 	const handleOtherSignIn = (e) => {
-		let signInPicked = e.detail
-		if(signInPicked === 'google'){
-			UserStore.signInWithGoogle($firebaseAuthStore, googleProvider);
-		} else {
-			// console.log(`${signInPicked} was picked, write a function for it.`)
-			UserStore.signInWithGithub($firebaseAuthStore, githubProvider)
-		}
+		let signInOption = e.detail;
+		handleThirdPartyLogin(signInOption)
 	};
 
-	$: if($UserStore.user){
+
+	$: if ($UserStore.user) {
 		user = true;
 	} else {
-		user = false
+		user = false;
 	}
-
 
 	const handleLoginModal = () => {
 		loading = true;
@@ -91,7 +84,10 @@
 
 <Main>
 	{#if !$UserStore.user && !user}
-		<AuthenticationForm {formData} on:authFormSubmitted={handleForm} on:otherSignInClicked={handleOtherSignIn} />
+		<AuthenticationForm
+			{formData}
+			on:authFormSubmitted={handleForm}
+			on:otherSignInClicked={handleOtherSignIn} />
 	{/if}
 	{#if loading}
 		<Modal>
@@ -105,8 +101,8 @@
 		</Modal>
 	{/if}
 	{#if user && $UserStore.user && $UserStore.userDisplayName}
-		 <h1 class="text-gray-50 text-[3rem]">Welcome {$UserStore.userDisplayName}</h1>
+		<h1 class="text-gray-50 text-[3rem]">Welcome {$UserStore.userDisplayName}</h1>
 	{:else if user && !$UserStore.userDisplayName && $UserStore.user.email}
-		 <h1 class="text-gray-50 text-[3rem]">Welcome {$UserStore.user.email}</h1>
+		<h1 class="text-gray-50 text-[3rem]">Welcome {$UserStore.user.email}</h1>
 	{/if}
 </Main>
