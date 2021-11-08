@@ -1,19 +1,19 @@
 import { writable, get } from 'svelte/store'
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, GithubAuthProvider } from 'firebase/auth'
 
 import { initializeApp } from '@firebase/app'
 
-const user = writable({ user: null, userDisplayName: null })
+const userStore = writable({ user: null, userDisplayName: null })
+
 const customUser = {
-    subscribe: user.subscribe,
+    subscribe: userStore.subscribe,
     createUser: (auth, email, password) => {
         console.log({ auth, email, password })
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const newUser = userCredential.user
-                user.set(newUser)
-                console.log(newUser)
+                customUser.setUser(user)
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -22,12 +22,12 @@ const customUser = {
             })
     },
     signInUser: (auth, email, password) => {
-        console.log({ auth, email, password })
+        // console.log({ auth, email, password })
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const newUser = userCredential.user
-                user.set(newUser)
-                console.log(newUser)
+                customUser.setUser(user)
+                // console.log(newUser)
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -43,7 +43,7 @@ const customUser = {
         })
     },
     setUser: (userData) => {
-        user.update(userObject => {
+        userStore.update(userObject => {
             let newObject = { ...userObject }
             newObject.user = userData
             if (userData.displayName) {
@@ -54,7 +54,7 @@ const customUser = {
         })
     },
     clearUser: () => {
-        user.set({ user: null, userDisplayName: null })
+        userStore.set({ user: null, userDisplayName: null })
     },
     signInWithGoogle: (auth, googleProvider) => {
         signInWithPopup(auth, googleProvider)
@@ -83,6 +83,29 @@ const customUser = {
                     credential
                 })
                 // ...
+            });
+    },
+    signInWithGithub: (auth, githubProvider) => {
+        signInWithPopup(auth, githubProvider)
+            .then((result) => {
+                // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+                const credential = GithubAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+
+                // The signed-in user info.
+                const user = result.user;
+                customUser.setUser(user)
+                console.log(get(user))
+                // ...
+            }).catch((error) => {
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // The email of the user's account used.
+                const email = error.email;
+                // The AuthCredential type that was used.
+                const credential = GithubAuthProvider.credentialFromError(error);
+                console.log({errorCode, errorMessage, email, credential})
             });
     }
 }

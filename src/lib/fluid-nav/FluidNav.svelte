@@ -36,6 +36,8 @@
 
 	let scrollY;
 	$: fluidOn = scrollY > 0 ? true : false;
+
+	$: console.log($UserStore.user)
 </script>
 
 <svelte:window bind:scrollY />
@@ -55,7 +57,7 @@
 				<MobileLink {link} />
 			{/each}
 			<div class="h-[1rem]" />
-			{#if $UserStore}
+			{#if $UserStore.user}
 				<SignOut on:signOut />
 			{/if}
 		</NavModal>
@@ -70,7 +72,7 @@
 				</p>
 			</a>
 		{/each}
-		{#if $UserStore}
+		{#if $UserStore.user}
 			<SignOut on:signOut />
 		{/if}
 	</nav>

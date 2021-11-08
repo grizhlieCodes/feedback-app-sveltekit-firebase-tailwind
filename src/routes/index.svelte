@@ -1,5 +1,5 @@
 <script>
-	import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+	import { GoogleAuthProvider, signInWithPopup, GithubAuthProvider } from 'firebase/auth';
 	import { fly, fade } from 'svelte/transition';
 	import AuthForm from '$lib/auth/AuthForm.svelte';
 	import authentication from '$lib/stores/user.js';
@@ -33,7 +33,8 @@
 		]
 	};
 	let firebaseAuthStore = getContext('firebaseAuthStore');
-	let provider = new GoogleAuthProvider();
+	let googleProvider = new GoogleAuthProvider();
+	let githubProvider = new GithubAuthProvider()
 	let user = true;
 	let loading = false;
 	let loadingFinished = false;
@@ -62,11 +63,19 @@
 	const handleOtherSignIn = (e) => {
 		let signInPicked = e.detail
 		if(signInPicked === 'google'){
-			UserStore.signInWithGoogle($firebaseAuthStore, provider);
+			UserStore.signInWithGoogle($firebaseAuthStore, googleProvider);
 		} else {
-			console.log(`${signInPicked} was picked, write a function for it.`)
+			// console.log(`${signInPicked} was picked, write a function for it.`)
+			UserStore.signInWithGithub($firebaseAuthStore, githubProvider)
 		}
 	};
+
+	$: if($UserStore.user){
+		user = true;
+	} else {
+		user = false
+	}
+
 
 	const handleLoginModal = () => {
 		loading = true;
@@ -95,7 +104,9 @@
 			{/if}
 		</Modal>
 	{/if}
-	{#if $UserStore.userDisplayName}
+	{#if user && $UserStore.user && $UserStore.userDisplayName}
 		 <h1 class="text-gray-50 text-[3rem]">Welcome {$UserStore.userDisplayName}</h1>
+	{:else if user && !$UserStore.userDisplayName && $UserStore.user.email}
+		 <h1 class="text-gray-50 text-[3rem]">Welcome {$UserStore.user.email}</h1>
 	{/if}
 </Main>

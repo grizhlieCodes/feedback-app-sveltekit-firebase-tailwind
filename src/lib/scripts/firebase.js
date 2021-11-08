@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { getFirestore, collection, getDoc, getDocs } from 'firebase/firestore';
+import UserStore from '$lib/stores/user.js'
 
 const firebaseApp = initializeApp({
     apiKey: 'AIzaSyDoZZVFxM39MVjdWGSqUuiBeg8Ahq4qxHk',
@@ -19,7 +20,9 @@ export const db = getFirestore()
 //Detect auth state
 onAuthStateChanged(auth, user => {
     if (user != null) {
-        console.log(`${user} logged in!`)
+        console.log(`logged in!`)
+        console.log(user)
+        UserStore.setUser(user)
     } else {
         console.log('user logged out.')
     }
