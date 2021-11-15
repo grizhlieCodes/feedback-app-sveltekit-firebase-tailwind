@@ -20,7 +20,8 @@ const config = {
 				teal: colors.teal,
 				orange: colors.orange,
 				cyan: colors.cyan,
-				rose: colors.rose
+				rose: colors.rose,
+				gray2: colors.trueGray
 			},
 			screens: {
 				"phone": '375px',
