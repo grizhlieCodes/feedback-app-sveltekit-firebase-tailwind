@@ -4,63 +4,83 @@
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 	import FinalButton from './FinalButton.svelte';
-	import OtherSignInOption from './OtherSignInOption.svelte';
-	export let formData
+	import ThirdPartyAuthOption from './ThirdPartyAuthOption.svelte';
+	import UserStore from '$lib/stores/user.js';
 
-	const formInputs = formData.formInputs
-	const otherSignIns = formData.otherSignIns
+	export let formData;
+
+	let formInputs = formData.formInputs;
+	const otherSignIns = formData.otherSignIns;
 
 	let formInputValues = {};
 
-	formInputs.forEach(i => {
-		formInputValues[i.name] = ""
-	})
+	formInputs.forEach((i) => {
+		formInputValues[i.name] = '';
+	});
 
 	let formStateSignUp = true;
 
+	$: if(formStateSignUp){
+		formInputs = formData.formInputs
+	} else {
+		formInputs = formData.formInputs.filter(i => {
+			const notPhotoURL = i.name !== 'photoURL';
+			const notUsername = i.name !== 'username'
+			if(notPhotoURL && notUsername){
+				return i
+			}
+		})
+	}
+
 	const submitForm = (e) => {
 		let data = { ...formInputValues };
-		dispatch('authFormSubmitted', {...data, formStateSignUp});
+		dispatch('authFormSubmitted', { data: { ...data }, formStateSignUp });
 	};
 
 	const updateValues = (e) => {
-		let inputEl = e.target
+		let inputEl = e.target;
 		let value = inputEl.value;
 		let name = `${inputEl.dataset.name}`;
-		formInputValues[name] = value; 
+		formInputValues[name] = value;
 	};
 
 	const toggleFormStateSignUp = () => {
 		formStateSignUp = !formStateSignUp;
 	};
 
-	const handleOtherSignIn = (e) => {
+	const handleThirdPartyOption = (e) => {
 		const optionSelected = e.detail;
-		dispatch('otherSignInClicked', `${optionSelected}`)
+		dispatch('thirdPartyOptionSelected', `${optionSelected}`);
 	};
-
 </script>
 
-<form
-	transition:fly={{ duration: 300, x: 300 }}
-	action="submit"
-	autocomplete="off"
-	class="w-full max-w-[43rem] bg-gray-50 flex flex-col items-center justify-center py-28 px-8
-	rounded-lg gap-[5rem]"
-	on:submit|preventDefault={submitForm}>
+{#if !$UserStore.user}
 
-	{#each otherSignIns as option}
-		<OtherSignInOption {formStateSignUp} {...option} on:otherSignInOptionClicked={handleOtherSignIn} />
-	{/each}
+	<form
+		transition:fly={{ duration: 300, x: 300 }}
+		on:outroend
+		action="submit"
+		autocomplete="off"
+		class="w-full max-w-[43rem] bg-gray-50 flex flex-col items-center justify-center py-28 px-8
+		rounded-lg gap-[5rem] m-auto justify-self-center"
+		on:submit|preventDefault={submitForm}>
 
-	<div class="h-[0.1rem] w-3/4 bg-gray-200" />
+		{#each otherSignIns as option}
+			<ThirdPartyAuthOption
+				{formStateSignUp}
+				{...option}
+				on:ThirdPartyAuthOptionClicked={handleThirdPartyOption} />
+		{/each}
 
-	{#each formInputs as input}
-		<Input {...input} on:input={updateValues} value={formInputValues[input.name]} />
-	{/each}
+		<div class="h-[0.1rem] w-3/4 bg-gray-200" />
 
-	<div id="buttons-container" class="flex flex-col gap-8 w-full max-w-[28rem] phablet:flex-row">
-		<FinalButton type="submit" {formStateSignUp} />
-		<FinalButton type="toggle" {formStateSignUp} on:toggleState={toggleFormStateSignUp} />
-	</div>
-</form>
+		{#each formInputs as input}
+			<Input {...input} on:input={updateValues} value={formInputValues[input.name]}  />
+		{/each}
+
+		<div id="buttons-container" class="flex flex-col gap-8 w-full max-w-[28rem] phablet:flex-row">
+			<FinalButton type="submit" {formStateSignUp} />
+			<FinalButton type="toggle" {formStateSignUp} on:toggleState={toggleFormStateSignUp} />
+		</div>
+	</form>
+{/if}

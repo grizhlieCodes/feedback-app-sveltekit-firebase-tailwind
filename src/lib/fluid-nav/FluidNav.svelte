@@ -4,11 +4,11 @@
 	import NavModal from './NavModal.svelte';
 	import MobileLink from './MobileLink.svelte';
 	import SignOut from './SignOut.svelte';
+	import AddSuggestion from './AddSuggestion.svelte';
 	import { getContext } from 'svelte';
 	import UserStore from '$lib/stores/user.js';
 
 	let size = getContext('size');
-	// $: console.log($size);
 
 	let links = [
 		{
@@ -36,7 +36,6 @@
 
 	let scrollY;
 	$: fluidOn = scrollY > 0 ? true : false;
-
 </script>
 
 <svelte:window bind:scrollY />
@@ -57,7 +56,8 @@
 			{/each}
 			<div class="h-[1rem]" />
 			{#if $UserStore.user}
-				<SignOut on:signOut />
+				<AddSuggestion on:navButtonClicked />
+				<SignOut on:navButtonClicked />
 			{/if}
 		</NavModal>
 	{/if}
@@ -72,7 +72,8 @@
 			</a>
 		{/each}
 		{#if $UserStore.user}
-			<SignOut on:signOut />
+			<AddSuggestion on:navButtonClicked />
+			<SignOut on:navButtonClicked />
 		{/if}
 	</nav>
 

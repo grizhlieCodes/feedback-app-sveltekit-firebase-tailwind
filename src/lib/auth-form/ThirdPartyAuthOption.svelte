@@ -7,7 +7,7 @@
     const handleClick = (e) => {
         let el = e.target.closest('button')
         let optionName = el.dataset.name
-        dispatch('otherSignInOptionClicked', `${optionName}`)
+        dispatch('ThirdPartyAuthOptionClicked', `${optionName}`)
     }
 </script>
 

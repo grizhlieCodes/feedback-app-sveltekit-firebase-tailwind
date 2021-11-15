@@ -1,22 +1,20 @@
 import { writable, get } from 'svelte/store'
 
-const userStore = writable({ user: null, userDisplayName: null })
+const userStore = writable({ user: null })
 
 const customUser = {
     subscribe: userStore.subscribe,
+
     setUser: (userData) => {
-        userStore.update(userObject => {
-            let newObject = { ...userObject }
-            newObject.user = userData
-            if (userData.displayName) {
-                newObject.userDisplayName = userData.displayName
-            }
-            console.log({ userData, newObject })
-            return newObject
+        userStore.set({ 
+            user: {...userData}
         })
+        console.log(get(userStore))
     },
+
     clearUser: () => {
-        userStore.set({ user: null, userDisplayName: null })
+        console.log('clearing user store')
+        userStore.set({ user: null })
     },
 }
 

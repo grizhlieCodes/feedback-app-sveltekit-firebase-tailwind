@@ -1,0 +1,45 @@
+export const signUpInputOptions = [
+    {
+        name: 'email',
+        type: 'email',
+        placeholder: ' ',
+        label: 'Email',
+        value: '',
+        valid: true,
+        errorMessage: '',
+        // helpText: '',
+    },
+    {
+        name: 'password',
+        type: 'password',
+        placeholder: ' ',
+        label: 'Password',
+        value: '',
+        valid: true,
+        errorMessage: '',
+        // maxLength: 100,
+        maxLength: 25,
+    }
+    // ,
+    // {
+    //     name: 'username',
+    //     type: 'text',
+    //     placeholder: ' ',
+    //     label: 'Username',
+    //     value: '',
+    //     valid: true,
+    //     errorMessage: '',
+    //     // maxLength: 100,
+    //     maxLength: 25,
+    // },
+    // {
+    //     name: 'photoURL',
+    //     type: 'text',
+    //     placeholder: ' ',
+    //     label: 'Photo URL',
+    //     value: '',
+    //     valid: true,
+    //     errorMessage: '',
+    //     // helpText: '',
+    // }
+]

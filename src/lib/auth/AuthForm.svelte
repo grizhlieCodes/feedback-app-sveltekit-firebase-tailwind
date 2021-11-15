@@ -23,7 +23,6 @@
 	let formStateSignUp = true;
 
 	const submitForm = (e) => {
-		console.log('running SubmitForm')
         dispatch('formSubmitted', {formStateSignUp, email: data.email, password: data.password})
     };
 
