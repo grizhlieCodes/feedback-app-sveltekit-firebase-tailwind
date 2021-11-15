@@ -1,13 +1,14 @@
 <script>
 	import '../app.css';
-	// import { writable } from 'svelte/store';
-	import { onMount, setContext, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import FluidNav from '$lib/fluid-nav/FluidNav.svelte';
-	// import { calcRealSize } from '$lib/scripts/helpers.js';
 	import Modal from '$lib/base/Modal.svelte'
 	import {addSuggestionToFirestore, loadSuggestionsFromFirebase, signOutUser} from '$lib/scripts/firebase.js'
 	import TextInput from '$lib/ui/TextInput.svelte'
 	import UserStore from '$lib/stores/user.js'
+	import ShowComponent from '$lib/stores/homepageShowComponent.js'
+
+	$: console.log($ShowComponent)
 
 	//The below logic simply updates the site with suggestions if all criteria is met.
 	let mounted = false;
@@ -63,5 +64,7 @@
 			<button on:click={addSuggestion}>Add Suggestion</button> 
 		 </Modal>
 	{/if}
-	<slot />
+	<div class="h-full flex-grow-1 w-full grid place-items-center">
+		<slot />
+	</div>
 </div>
