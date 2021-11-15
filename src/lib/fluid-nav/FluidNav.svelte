@@ -7,6 +7,7 @@
 	import AddSuggestion from './AddSuggestion.svelte';
 	import { getContext } from 'svelte';
 	import UserStore from '$lib/stores/user.js';
+	import UserMenu from '$lib/user-menu/UserMenu.svelte'
 
 	let size = getContext('size');
 
@@ -74,6 +75,7 @@
 		{#if $UserStore.user}
 			<AddSuggestion on:navButtonClicked />
 			<SignOut on:navButtonClicked />
+			<UserMenu />
 		{/if}
 	</nav>
 
