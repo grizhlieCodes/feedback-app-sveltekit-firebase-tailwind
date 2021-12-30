@@ -1,10 +1,12 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, GithubAuthProvider, setPersistence, browserSessionPersistence, sendPasswordResetEmail } from 'firebase/auth'
+import { updateProfile } from 'firebase/auth'
 import { getFirestore, collection, getDoc, getDocs, addDoc, setDoc, doc } from 'firebase/firestore';
 import UserStore from '$lib/stores/user.js'
 import LoginTimer from '$lib/stores/loginTimer.js'
 import SuggestionsStore from '$lib/stores/suggestions.js'
 import loginController from '$lib/stores/loginController';
+import userOptions from '$lib/stores/userOptions'
 import { get } from 'svelte/store';
 
 const firebaseApp = initializeApp({
@@ -17,7 +19,7 @@ const firebaseApp = initializeApp({
 })
 
 //Authentication Scripts
-const auth = getAuth()
+export const auth = getAuth()
 const googleProvider = new GoogleAuthProvider()
 const githubProvider = new GithubAuthProvider()
 
@@ -28,6 +30,7 @@ onAuthStateChanged(auth, user => {
         UserStore.setUser(user)
         // updateUserStoreWhenUserLoggedIn(user.uid)
         loginController.setStatusAsSuccess()
+        console.log(user)
 
     }
     //Else if user not logged in, set user info to null.
@@ -83,7 +86,7 @@ const signInUser = (authObject, data) => {
         })
 }
 
-const resetUsersPassword = (authObject, data) => {
+const resetUsersPassword = (authObject, data, message = '') => {
     sendPasswordResetEmail(authObject, data.email)
         .then(() => {
             console.log('Password Reset sent!')
@@ -140,6 +143,39 @@ const signInWithGoogle = (authObject, google) => {
         });
 }
 
+export const updateDisplayName = (newDisplayName) => {
+    updateProfile(auth.currentUser, {
+        displayName: newDisplayName
+    }).then(() => {
+        console.log('Display name updated to ' + newDisplayName)
+        UserStore.updateDisplayName(newDisplayName)
+    }).catch((error) => console.log(error))
+}
+
+
+export const updateProfileImage = (newImageURL, message) => {
+    updateProfile(auth.currentUser, {
+        photoURL: newImageURL
+    }).then(() => {
+        UserStore.updateImage(newImageURL)
+        userOptions.setToSuccess(message)
+    }).catch((error) => console.log(error))
+};
+
+export const sendPasswordResetInternal = (auth, newUserEmail, message) => {
+    sendPasswordResetEmail(auth, newUserEmail)
+        .then(() => {
+            // ..
+            userOptions.setToSuccess(message)
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // ..
+            // loginController.setStatusAsError()
+        });
+};
+
 // const signInWithGithub = (authObject, github) => {
 //     signInWithPopup(authObject, github)
 //         .then((result) => {
@@ -168,7 +204,7 @@ export const handleThirdPartyLogin = (signInOption) => {
 
 export const signOutUser = () => {
     signOut(auth).then(() => {
-        
+
         console.log('logged user out')
     }).catch((error) => {
         console.log(error)
@@ -179,15 +215,21 @@ export const signOutUser = () => {
 //Firestore Scripts
 const db = getFirestore()
 
-export const addSuggestionToFirestore = async (suggestionObject) => {
+export const addSuggestionToFirestore = async (suggestionObject, message) => {
+    console.log('fb, this is the message: ' + message)
     let filteredDataObject = {
         name: suggestionObject.suggestionName,
         description: suggestionObject.suggestionDescription,
         link: suggestionObject.linkName
     }
+    console.log(filteredDataObject)
     const addSuggestion = await addDoc(collection(db, "suggestions"), filteredDataObject);
     const docId = await addSuggestion.id
     SuggestionsStore.addSuggestion(filteredDataObject, docId)
+    if (docId) {
+        console.log('success, this is the message: ' + message)
+        userOptions.setToSuccess(message)
+    }
 }
 
 export const loadSuggestionsFromFirebase = async () => {

@@ -27,11 +27,7 @@
 		in:fly={transitionData.in}
 		out:fly={transitionData.out}
 		on:outroend={updateShowComponent}
-		class="w-full h-full flex flex-col items-center gap-32 center-child">
-		<h1 class="text-gray-50 text-[3rem]">Welcome {$UserStore.user.email}</h1>
-		{#if $UserStore.user.photoURL}
-			<img src={$UserStore.user.photoURL} alt="" class=" h-12" />
-		{/if}
+		class="w-full h-full flex flex-col items-center gap-32 center-child pt-32">
 		<Suggestions />
 	</div>
 {/if}

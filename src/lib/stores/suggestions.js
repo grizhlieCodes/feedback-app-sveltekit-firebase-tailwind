@@ -17,6 +17,7 @@ const customSuggestionsStore = {
 
     setSuggestionsOnLoad: (suggestions) => {
         suggestionsStore.set(suggestions)
+        // console.log(get(suggestionsStore))
     },
 
     returnStore: () => {

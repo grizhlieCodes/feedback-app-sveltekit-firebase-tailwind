@@ -1,69 +1,71 @@
 <script>
+	//Svelte
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import FluidNav from '$lib/fluid-nav/FluidNav.svelte';
-	import Modal from '$lib/base/Modal.svelte'
-	import {addSuggestionToFirestore, loadSuggestionsFromFirebase, signOutUser} from '$lib/scripts/firebase.js'
-	import TextInput from '$lib/ui/TextInput.svelte'
-	import UserStore from '$lib/stores/user.js'
-	import ShowComponent from '$lib/stores/homepageShowComponent.js'
 
-	$: console.log($ShowComponent)
+	//Components
+	import FluidNav from '$lib/fluid-nav/FluidNav.svelte';
+	import MenuModal from '$lib/menu-modal/MenuModal.svelte';
+
+	//Data
+	import { menuFormData } from '$lib/dataScripts/menuInputsButtonsData';
+
+	console.log(menuFormData)
+
+	//State
+	import UserStore from '$lib/stores/user.js';
+	import ShowComponent from '$lib/stores/homepageShowComponent.js';
+
+	//Functions
+	import {
+		addSuggestionToFirestore,
+		loadSuggestionsFromFirebase,
+		signOutUser
+	} from '$lib/scripts/firebase.js';
 
 	//The below logic simply updates the site with suggestions if all criteria is met.
 	let mounted = false;
 	let loadedSuggestionsOnMount = false;
 	onMount(() => {
-		mounted = true
-		if($UserStore.user){
-			loadSuggestionsFromFirebase()
+		mounted = true;
+		if ($UserStore.user) {
+			loadSuggestionsFromFirebase();
 			loadedSuggestionsOnMount = true;
 		}
-	})
+	});
 
-	$: if(mounted && !loadedSuggestionsOnMount && $UserStore.user){
-		loadSuggestionsFromFirebase()
-	}
-	
-	let showAddSuggestion = false;
-
-	const toggleShowSuggestion = () => {
-		showAddSuggestion = !showAddSuggestion
+	$: if (mounted && !loadedSuggestionsOnMount && $UserStore.user) {
+		loadSuggestionsFromFirebase();
 	}
 
-	const handleNavButtonClick = (e) => {
-		let clickType = e.detail;
-		if (clickType === 'signOut') {
-			signOutUser();
-		} else if (clickType = 'addSuggestion'){
-			toggleShowSuggestion()
-		}
+	let showModal = false;
+
+	const handleMenuButton = (e) => {
+		let name = e.detail;
+		console.log(name)
+		updateSelectedMenuItem(name)
+		showModal = !showModal;
 	};
 
-	let suggestionName = "", suggestionDescription = "", linkName = ""
+	let selectedMenuItem = {...menuFormData[0]}
 
-	const addSuggestion = () => {
-		linkName = suggestionName.toLowerCase().replace(/\s/gm,'-')
-		let data = {suggestionName, suggestionDescription, linkName}
-		addSuggestionToFirestore(data)
-		toggleShowSuggestion()
-	}
+	const updateSelectedMenuItem = (itemName) => {
+		const newlySelectedItem = {...menuFormData[itemName]};
+		selectedMenuItem = newlySelectedItem
+	};
 
+	const toggleShowModal = () => {
+		showModal = !showModal
+	};
 </script>
 
 <div
 	id="body"
 	class="w-full max-w-[111rem] h-full flex-grow flex flex-col items-center justify-start gap-8">
-	<FluidNav on:navButtonClicked={handleNavButtonClick}>
+	<FluidNav on:menuButtonClicked={handleMenuButton}>
 		<img src="/logo.png" slot="logo" alt="" class="h-full" />
 	</FluidNav>
-	{#if showAddSuggestion}
-		 <Modal on:click={toggleShowSuggestion}>
-			<TextInput name="suggestionName" bind:value={suggestionName} type="text" />
-			<TextInput name="suggestionDescription" bind:value={suggestionDescription} type="text" />
-			<button on:click={addSuggestion}>Add Suggestion</button> 
-		 </Modal>
-	{/if}
+	<MenuModal {showModal} {selectedMenuItem} on:toggleShowModal={toggleShowModal} />
 	<div class="h-full flex-grow-1 w-full grid place-items-center">
 		<slot />
 	</div>

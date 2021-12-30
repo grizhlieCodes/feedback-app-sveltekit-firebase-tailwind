@@ -96,8 +96,7 @@
 	on:outroend={updateShowComponent}
 	action="submit"
 	autocomplete="off"
-	class=" min-h-[76.5rem] overflow-hidden bg-gray-50 grid py-28 px-24 rounded-lg gap-[5rem] m-auto
-	justify-self-center relative center-child"
+	class=" min-h-[76.5rem] overflow-hidden bg-gray-50 grid py-28 px-24 rounded-lg gap-[5rem] m-auto justify-self-center relative center-child"
 	on:submit|preventDefault={submitForm}>
 
 	<div

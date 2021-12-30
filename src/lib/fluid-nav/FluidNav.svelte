@@ -56,10 +56,6 @@
 				<MobileLink {link} />
 			{/each}
 			<div class="h-[1rem]" />
-			{#if $UserStore.user}
-				<AddSuggestion on:navButtonClicked />
-				<SignOut on:navButtonClicked />
-			{/if}
 		</NavModal>
 	{/if}
 	<nav class="hidden sm:flex flex-row w-full justify-end items-center">
@@ -73,9 +69,7 @@
 			</a>
 		{/each}
 		{#if $UserStore.user}
-			<AddSuggestion on:navButtonClicked />
-			<SignOut on:navButtonClicked />
-			<UserMenu />
+			<UserMenu on:menuButtonClicked/>
 		{/if}
 	</nav>
 

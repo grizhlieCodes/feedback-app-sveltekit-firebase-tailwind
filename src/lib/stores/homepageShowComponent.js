@@ -17,6 +17,10 @@ const customShowComponent = {
         } else {
             showComponent.set('auth')
         }
+    },
+
+    setToAuth: () => {
+        showComponent.set('auth')
     }
 }
 

@@ -5,8 +5,8 @@
 <div
 	in:fly={{ x: 300, duration: 250 }} out:fly={{x: -300, duration: 500}}
 	on:outroend
-	class="fixed left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] w-full max-w-[50rem] h-[50rem]
-	flex items-center justify-center flex-col gap-8 bg-gray-200 z-[100] rounded-xl p-16">
+	class="clickable-modal fixed left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] w-max h-[50rem]
+	grid place-items-center gap-8 bg-gray-100 z-[100] rounded-xl p-16">
 	<slot />
 </div>
 
